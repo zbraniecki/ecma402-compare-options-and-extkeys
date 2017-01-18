@@ -4,7 +4,8 @@
   function constructLocaleString(languageTag, extensionKeys = {}) {
     let extKeys = [];
 
-    for (const [key, value] of Object.entries(extensionKeys)) {
+    for (const key in extensionKeys) {
+      let value = extensionKeys[key];
       extKeys.push(`${key}-${value}`); 
     };
     if (extKeys.length === 0) {
@@ -13,7 +14,7 @@
     return `${languageTag}-u-${extKeys.join('-')}`;
   }
 
-  function testFormatter(fmtName, Intl) {
+  function testFormatter(tests, fmtName, Intl) {
     if (!Intl.hasOwnProperty(fmtName)) {
       return false;
     }
@@ -128,7 +129,7 @@
   }
 
 
-  function runTests() {
+  function runTests(tests) {
     if (typeof Intl === "undefined") {
       return false;
     }
@@ -136,12 +137,15 @@
     const results = {};
 
     for (const key in tests) {
-      results[key] = testFormatter(key, Intl);
+      results[key] = testFormatter(tests, key, Intl);
     };
 
     return results;
   }
 
-  const results = runTests();
+  const results = runTests(tests);
   console.log(JSON.stringify(results, null, 2));
+  if (typeof document === "object") {
+    document.getElementById('content').textContent = JSON.stringify(results, null, 2);
+  }
 }
